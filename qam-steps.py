@@ -19,6 +19,26 @@
 
 import random
 
+### 5.1 Reed-Solomon Coding
+
+gf_exp = [1] * 256
+gf_log = [0] * 128
+x = 1
+for i in range(1, 127):
+    x <<= 1
+    if x & 0b10000000 != 0:
+        x = (x & 0b1111111) ^ 0b0001001
+    gf_exp[i] = x
+    gf_log[x] = i
+for i in range(127, 256):
+    gf_exp[i] = gf_exp[i - 127]
+
+def gf_mul(x, y):
+    if x == 0 or y == 0:
+        return 0
+    return gf_exp[gf_log[x] + gf_log[y]]
+
+
 ### 5.4 Randomization
 
 rseq = []
