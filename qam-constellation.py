@@ -1,3 +1,22 @@
+# Copyright 2014 Clayton Smith
+#
+# This file is part of qam-tx
+#
+# qam-tx is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# qam-tx is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with qam-tx; see the file COPYING.  If not, write to
+# the Free Software Foundation, Inc., 51 Franklin Street,
+# Boston, MA 02110-1301, USA.
+
 table = """110,111 111,011 010,111 011,011 100,101 101,111 110,101 111,111
 110,100 111,000 010,100 011,000 100,000 101,010 110,000 111,010
 100,111 101,011 000,111 001,011 000,101 001,111 010,101 011,111
