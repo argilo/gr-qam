@@ -1,5 +1,27 @@
 import random
 
+### 5.4 Randomization
+
+rseq = []
+c2 = 0b1111111
+c1 = 0b1111111
+c0 = 0b1111111
+for n in range(128 * 60):
+    rseq.append(c2)
+    c2_new = c1
+    c1_new = c0 ^ c2
+    c0_new = c2
+    for x in range(3):
+        c0_new <<= 1
+        if c0_new & 0b10000000 != 0:
+            c0_new = (c0_new & 0b1111111) ^ 0b0001001
+    c2 = c2_new
+    c1 = c1_new
+    c0 = c0_new
+    
+
+### 5.5 Trellis Coded Modulation
+
 Xp = 0
 Yp = 0
 
