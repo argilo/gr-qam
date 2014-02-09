@@ -2,7 +2,7 @@
 ##################################################
 # Gnuradio Python Flow Graph
 # Title: Qam64
-# Generated: Fri Feb  7 18:17:49 2014
+# Generated: Sat Feb  8 22:09:12 2014
 ##################################################
 
 from gnuradio import blocks
@@ -66,7 +66,7 @@ class qam64(grc_wxgui.top_block_gui):
         self.osmosdr_sink_0.set_if_gain(0, 0)
         self.osmosdr_sink_0.set_bb_gain(-4, 0)
         self.osmosdr_sink_0.set_antenna("", 0)
-        self.osmosdr_sink_0.set_bandwidth(0, 0)
+        self.osmosdr_sink_0.set_bandwidth(6000000, 0)
           
         self.digital_qam_mod_0 = digital.qam.qam_mod(
           constellation_points=64,
@@ -79,15 +79,17 @@ class qam64(grc_wxgui.top_block_gui):
           )
         self.digital_map_bb_0 = digital.map_bb((36, 35, 34, 19, 20, 37, 18, 21, 28, 27, 44, 29, 26, 43, 42, 45, 52, 33, 32, 3, 22, 53, 2, 23, 30, 11, 60, 31, 10, 41, 40, 61, 38, 51, 50, 17, 4, 39, 16, 5, 12, 25, 46, 13, 24, 59, 58, 47, 54, 49, 48, 1, 6, 55, 0, 7, 14, 9, 62, 15, 8, 57, 56, 63))
         self.blocks_unpacked_to_packed_xx_0 = blocks.unpacked_to_packed_bb(6, gr.GR_MSB_FIRST)
+        self.blocks_multiply_const_vxx_0 = blocks.multiply_const_vcc((0.4, ))
         self.analog_random_source_x_0 = blocks.vector_source_b(map(int, numpy.random.randint(0, 64, 100000)), True)
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.digital_qam_mod_0, 0), (self.osmosdr_sink_0, 0))
-        self.connect((self.digital_map_bb_0, 0), (self.blocks_unpacked_to_packed_xx_0, 0))
-        self.connect((self.blocks_unpacked_to_packed_xx_0, 0), (self.digital_qam_mod_0, 0))
         self.connect((self.analog_random_source_x_0, 0), (self.digital_map_bb_0, 0))
+        self.connect((self.digital_qam_mod_0, 0), (self.blocks_multiply_const_vxx_0, 0))
+        self.connect((self.blocks_unpacked_to_packed_xx_0, 0), (self.digital_qam_mod_0, 0))
+        self.connect((self.digital_map_bb_0, 0), (self.blocks_unpacked_to_packed_xx_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0, 0), (self.osmosdr_sink_0, 0))
 
 
 # QT sink close method reimplementation
@@ -104,9 +106,9 @@ class qam64(grc_wxgui.top_block_gui):
 
     def set_gain(self, gain):
         self.gain = gain
-        self.osmosdr_sink_0.set_gain(self.gain, 0)
         self._gain_slider.set_value(self.gain)
         self._gain_text_box.set_value(self.gain)
+        self.osmosdr_sink_0.set_gain(self.gain, 0)
 
     def get_center_freq(self):
         return self.center_freq
