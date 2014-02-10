@@ -40,7 +40,7 @@ for Cword in C:
         bit += 1
 Cbits = Cbits[0:1497]
 
-def matrix_mul(bytes):
+def compute_sum(bytes):
     result = 0
 
     row = [0] * 1504
@@ -51,15 +51,32 @@ def matrix_mul(bytes):
             bit += 1
 
     for i in range(8):
-        col = ([0] * i) + Cbits + ([0] * (7 - i))
-        total = 0
-        for j in range(1504):
-            total ^= row[j] & col[j]
+        total = (0x47 >> (7-i)) & 1
+        for j in range(1496):
+            total ^= row[i+j] & Cbits[j]
+        row[1496+i] = total
         result |= (total << (7-i))
 
     return result
 
-print "{0:02x}".format(matrix_mul([0x00] * 187 + [0x67]))
+def verify_packet(bytes):
+    result = 0
+
+    row = [0] * 1504
+    bit = 0
+    for byte in bytes:
+        for i in range(8):
+            row[bit] = (byte >> (7-i)) & 1
+            bit += 1
+
+    for i in range(8):
+        total = 0
+        for j in range(1497):
+            total ^= row[i+j] & Cbits[j]
+        result |= (total << (7-i))
+
+    return result
+
 
 ### 5.1 Reed-Solomon Coding
 
