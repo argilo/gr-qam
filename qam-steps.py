@@ -60,6 +60,27 @@ def reed_solomon(message):
     return result
 
 
+### 5.2 Interleaving
+
+control_word = 0b0110
+I = 5
+J = 2
+commutator = 0
+registers = []
+for i in range(I):
+    registers.append([0] * i * J)
+
+def interleave(symbols):
+    global commutator
+
+    result = []
+    for symbol in symbols:
+        registers[commutator] = [symbol] + registers[commutator]
+        result.append(registers[commutator].pop())
+        commutator = (commutator + 1) % I
+    return result
+
+
 ### 5.4 Randomization
 
 rseq = []
