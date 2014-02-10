@@ -63,8 +63,8 @@ def reed_solomon(message):
 ### 5.2 Interleaving
 
 control_word = 0b0110
-I = 5
-J = 2
+I = 128
+J = 4
 commutator = 0
 registers = []
 for i in range(I):
