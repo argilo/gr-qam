@@ -233,16 +233,14 @@ def encode_frame(symbols):
 def repack_bytes(bytes):
     result = [0] * 8
 
-    bits = [0] * 56
-    bit = 0
-    for byte in bytes:
-        for i in range(8):
-            bits[bit] = (byte >> (7-i)) & 1
-            bit += 1
-    
-    for i in range(8):
-        for j in range(7):
-            result[i] |= (bits[i*7 + j]) << (6-j)
+    result[0] =                                   bytes[0] >> 1
+    result[1] = ((bytes[0] & 0b00000001) << 6) | (bytes[1] >> 2)
+    result[2] = ((bytes[1] & 0b00000011) << 5) | (bytes[2] >> 3)
+    result[3] = ((bytes[2] & 0b00000111) << 4) | (bytes[3] >> 4)
+    result[4] = ((bytes[3] & 0b00001111) << 3) | (bytes[4] >> 5)
+    result[5] = ((bytes[4] & 0b00011111) << 2) | (bytes[5] >> 6)
+    result[6] = ((bytes[5] & 0b00111111) << 1) | (bytes[6] >> 7)
+    result[7] =   bytes[6] & 0b01111111
 
     return result
 
