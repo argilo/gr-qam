@@ -150,6 +150,23 @@ def trellis_code(rs):
 
     return qs
 
-print(["{0:06b}".format(symbol) for symbol in trellis_code([0x75, 0x2C, 0x0D, 0x6C])])
-for x in range(1000):
-    print(["{0:06b}".format(symbol) for symbol in trellis_code([random.randint(0,127), random.randint(0,127), random.randint(0,127), random.randint(0,127)])])
+
+### 5.3 Frame Synchronization
+
+# Encodes 60 Reed-Solomon blocks (each consisting of 122 7-bit symbols)
+# into a frame.
+def encode_frame(symbols):
+    frame = []
+
+    for i in range(60):
+        frame = frame + interleave(reed_solomon(symbols[i*122:(i+1)*122]))
+
+    for i in range(len(frame)):
+        frame[i] ^= rseq[i]
+
+    return frame + [0x75, 0x2C, 0x0D, 0x6C, control_word << 3, 0x00]
+
+
+test_vector = [0] * 122 * 60
+
+print(encode_frame(test_vector))
