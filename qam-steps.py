@@ -38,6 +38,27 @@ def gf_mul(x, y):
         return 0
     return gf_exp[gf_log[x] + gf_log[y]]
 
+def gf_poly_eval(p, x):
+    y = p[0]
+    for i in range(1, len(p)):
+        y = gf_mul(y, x) ^ p[i]
+    return y
+
+def reed_solomon(message):
+    # Generator polynomial from p.7 of ANSI/SCTE 07 2013
+    g = [1, gf_exp[52], gf_exp[116], gf_exp[119], gf_exp[61], gf_exp[15]]
+
+    dividend = message + [0, 0, 0, 0, 0]
+    for i in range(len(message)):
+        coeff = dividend[i]
+        for j in range(len(g)):
+            dividend[i + j] ^= gf_mul(coeff, g[j])
+
+    result = message + dividend[-5:] + [0]
+    result[-1] = gf_poly_eval(result, gf_exp[6])
+
+    return result
+
 
 ### 5.4 Randomization
 
