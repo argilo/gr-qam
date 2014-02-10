@@ -158,8 +158,8 @@ def trellis_code(rs):
 def encode_frame(symbols):
     frame = []
 
-    for i in range(60):
-        frame = frame + interleave(reed_solomon(symbols[i*122:(i+1)*122]))
+    for i in range(0, len(symbols), 122):
+        frame = frame + interleave(reed_solomon(symbols[i:i+122]))
 
     for i in range(len(frame)):
         frame[i] ^= rseq[i]
@@ -169,4 +169,8 @@ def encode_frame(symbols):
 
 test_vector = [0] * 122 * 60
 
-print(encode_frame(test_vector))
+frames = encode_frame(test_vector) + encode_frame(test_vector)
+output = []
+for i in range(0, len(frames), 4):
+    output += trellis_code(frames[i:i+4])
+print len(output)
