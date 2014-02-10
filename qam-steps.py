@@ -1,3 +1,5 @@
+#!/usr/bin/env /usr/bin/python
+
 # Copyright 2014 Clayton Smith
 #
 # This file is part of qam-tx
@@ -226,10 +228,58 @@ def encode_frame(symbols):
     return frame + [0x75, 0x2C, 0x0D, 0x6C, control_word << 3, 0x00]
 
 
-test_vector = [0] * 122 * 60
+# Convert MPEG transport stream to QAM symbols
 
-frames = encode_frame(test_vector) + encode_frame(test_vector)
-output = []
-for i in range(0, len(frames), 4):
-    output += trellis_code(frames[i:i+4])
-print len(output)
+def repack_bytes(bytes):
+    result = [0] * 8
+
+    bits = [0] * 56
+    bit = 0
+    for byte in bytes:
+        for i in range(8):
+            bits[bit] = (byte >> (7-i)) & 1
+            bit += 1
+    
+    for i in range(8):
+        for j in range(7):
+            result[i] |= (bits[i*7 + j]) << (6-j)
+
+    return result
+
+import sys
+
+args = sys.argv[1:]
+if len(args) != 2:
+    sys.stderr.write("Usage: qam-steps.py input_file output_file\n");
+    sys.exit(1)
+
+CHUNK_SIZE = 188 * 6405
+
+with open(args[0], 'rb') as fin:
+    with open(args[1], 'wb') as fout:
+        bytes = fin.read(CHUNK_SIZE)
+        while len(bytes) == CHUNK_SIZE:
+            chunk_framed = []
+            for i in range(0, CHUNK_SIZE, 188):
+                if ord(bytes[i]) != 0x47:
+                    sys.stderr.write("Error: MPEG packet didn't begin with 0x47\n")
+                    sys.exit(1)
+                packet = [ord(byte) for byte in bytes[i+1:i+188]]
+                chunk_framed += (packet + [compute_sum(packet)])
+            print len(chunk_framed),
+
+            chunk_repacked = []
+            for i in range(0, CHUNK_SIZE, 7):
+                chunk_repacked += repack_bytes(chunk_framed[i:i+7])
+            print len(chunk_repacked),
+
+            chunk_encoded = []
+            for i in range(0, len(chunk_repacked), 122*60):
+                chunk_encoded += encode_frame(chunk_repacked[i:i+122*60])
+            print len(chunk_encoded)
+
+            for i in range(0, len(chunk_encoded), 4):
+                fout.write(bytearray(trellis_code(chunk_encoded[i:i+4])))
+            fout.flush()
+            
+            bytes = fin.read(CHUNK_SIZE)
