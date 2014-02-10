@@ -112,7 +112,7 @@ def reed_solomon(message):
     dividend = message + [0, 0, 0, 0, 0]
     for i in range(len(message)):
         coeff = dividend[i]
-        for j in range(len(g)):
+        for j in range(1, len(g)):
             dividend[i + j] ^= gf_mul(coeff, g[j])
 
     result = message + dividend[-5:] + [0]
