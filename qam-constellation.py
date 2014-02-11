@@ -33,4 +33,4 @@ for x in range(64):
     for row in range(8):
         for col in range(8):
             if table3[row][col] == x:
-                print str(col*8 + row) + ",",
+                print "complex(" + str(-7 + 2*col) + "," + str(-7 + 2*row) + "),", 
