@@ -40,6 +40,10 @@ default, it does so on 438-444 MHz, which corresponds with cable
 channel 60 and happens to be in the 70cm amateur band.  To adjust the
 transmit frequency, change the center_freq variable.
 
+The qam-constellation.py script is not needed for transmitting; it was
+used to convert the QAM constellation table from ANSI/SCTE 70 2013 into
+I/Q values for the "Chunks to Symbols" block in the flow graph.
+
 The next step for the project is to replace qam-steps.py with optimized
 GNU Radio blocks so that the transmitter can run in real time.
 
