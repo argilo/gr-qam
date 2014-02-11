@@ -17,6 +17,7 @@
 # the Free Software Foundation, Inc., 51 Franklin Street,
 # Boston, MA 02110-1301, USA.
 
+# Figure 18 (64-QAM constellation) from ANSI/SCTE 07 2013
 table = """110,111 111,011 010,111 011,011 100,101 101,111 110,101 111,111
 110,100 111,000 010,100 011,000 100,000 101,010 110,000 111,010
 100,111 101,011 000,111 001,011 000,101 001,111 010,101 011,111
@@ -26,6 +27,8 @@ table = """110,111 111,011 010,111 011,011 100,101 101,111 110,101 111,111
 110,011 111,001 100,011 101,001 010,001 011,101 110,001 111,101
 110,110 111,100 100,110 101,100 010,010 011,110 110,010 111,110"""
 
+# Convert the table into a list of constellation points suitable
+# for use in a "Chunks to Symbols" block.
 rows = table.split("\n")[::-1]
 table2 = [row.split(" ") for row in rows]
 table3 = [[int(cell.replace(",",""),2) for cell in row] for row in table2]
