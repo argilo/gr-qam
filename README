@@ -22,3 +22,25 @@ qam-tx
 
 Author: Clayton Smith
 Email: <argilo@gmail.com>
+
+The goal of thhis project is to build a software-defined 64-QAM and
+256-QAM transmitter, based on the ANSI/SCTE 07 2013 Digital
+Transmission Standard for Cable Television:
+
+    http://www.scte.org/FileDownload.aspx?A=3445
+
+At present, a complete 64-QAM transmitter is implemented, but it does
+not yet run fast enough for real-time transmission.  It consists of two
+parts: a Python script (qam-steps.py) that takes an MPEG transport
+stream as input and produces a file containing 64-QAM symbols.  This is
+the part that runs well slower than real-time.  The second piece is a
+GNU Radio flow graph (qam64.grc) that reads in the 64-QAM symbols
+produced by qam-steps.py and transmits them through a BladeRF.  By
+default, it does so on 438-444 MHz, which corresponds with cable
+channel 60 and happens to be in the 70cm amateur band.  To adjust the
+transmit frequency, change the center_freq variable.
+
+The next step for the project is to replace qam-steps.py with optimized
+GNU Radio blocks so that the transmitter can run in real time.
+
+Contributions are welcome!
