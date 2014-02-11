@@ -128,6 +128,7 @@ I = 128
 J = 4
 commutator = 0
 registers = []
+pointers = [0] * I
 for i in range(I):
     registers.append([0] * i * J)
 
@@ -136,8 +137,13 @@ def interleave(symbols):
 
     result = []
     for symbol in symbols:
-        registers[commutator] = [symbol] + registers[commutator]
-        result.append(registers[commutator].pop())
+        if commutator == 0:
+            result.append(symbol)
+        else:
+            p = pointers[commutator]
+            result.append(registers[commutator][p])
+            registers[commutator][p] = symbol
+            pointers[commutator] = (p + 1) % (commutator * J)
         commutator = (commutator + 1) % I
     return result
 
