@@ -43,21 +43,44 @@ for Cword in C:
 Cbits = Cbits[0:1497]
 
 def compute_sum(bytes):
-    result = 0
+    tapsG = 0b10110001
+    tapsB = 0b1000101
 
-    row = [0] * 1504
-    bit = 0
+    register1 = 0
+    register2 = 0
+    register3 = 0
+
+    result = 0x67
+
+    first7 = [0]
+
     for byte in bytes:
         for i in range(8):
-            row[bit] = (byte >> (7-i)) & 1
-            bit += 1
+            bit = (byte >> (7-i)) & 1
+            out = (register1 & 1) ^ bit
+            if len(first7) < 8:
+                first7.append(out)
+            register1 >>= 1
+            if out == 1:
+                register1 ^= tapsG
 
     for i in range(8):
-        total = (0x47 >> (7-i)) & 1
-        for j in range(1496):
-            total ^= row[i+j] & Cbits[j]
-        row[1496+i] = total
-        result |= (total << (7-i))
+        out1 = register1 & 1
+        register1 >>= 1
+        if out1 == 1:
+            register1 ^= tapsG
+
+        out2 = (register2 & 1) ^ first7[i]
+        register2 >>= 1
+        if first7[i] == 1:
+            register2 ^= tapsB
+
+        out3 = (register3 & 1) ^ out1 ^ out2
+        register3 >>= 1
+        if (out1 ^ out2) == 1:
+            register3 ^= tapsG
+
+        result ^= (out3 << (7-i))
 
     return result
 
