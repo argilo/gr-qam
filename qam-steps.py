@@ -54,12 +54,20 @@ def compute_sum(bytes):
 
     first7 = [0]
 
-    for byte in bytes:
+    byte = bytes[0]
+    for i in range(8):
+        bit = (byte >> (7-i)) & 1
+        out = (register1 & 1) ^ bit
+        if i < 7:
+            first7.append(out)
+        register1 >>= 1
+        if out == 1:
+            register1 ^= tapsG
+
+    for byte in bytes[1:]:
         for i in range(8):
             bit = (byte >> (7-i)) & 1
             out = (register1 & 1) ^ bit
-            if len(first7) < 8:
-                first7.append(out)
             register1 >>= 1
             if out == 1:
                 register1 ^= tapsG
