@@ -206,8 +206,11 @@ def diff_precoder(W, Z):
     Yp = Y
     return X, Y
 
-Xq = [0,0,0,0]
-Yq = [0,0,0,0]
+G1table = [(n >> 4) ^ ((n & 0b00100) >> 2) ^ (n & 1) for n in range(32)]
+G2table = [(n >> 4) ^ ((n & 0b01000) >> 3) ^ ((n & 0b00100) >> 2) ^ ((n & 0b00010) >> 1) ^ (n & 1) for n in range(32)]
+
+Xq = 0
+Yq = 0
 
 def trellis_code(rs):
     global Xq, Yq
@@ -224,19 +227,19 @@ def trellis_code(rs):
     nn = 0
     for n in range(4):
         X, Y = diff_precoder((A >> (n+10)) & 1, (B >> (n+10)) & 1)
-        Xq = [X] + Xq
-        Yq = [Y] + Yq
+        Xq = (Xq << 1) + X
+        Yq = (Yq << 1) + Y
 
         if n == 3:
-            qs[nn] |= (Xq[0] ^ Xq[2] ^ Xq[4]) << 3
-            qs[nn] |= (Yq[0] ^ Yq[2] ^ Yq[4])
+            qs[nn] |= G1table[Xq] << 3
+            qs[nn] |= G1table[Yq]
             nn += 1
-        qs[nn] |= (Xq[0] ^ Xq[1] ^ Xq[2] ^ Xq[3] ^ Xq[4]) << 3
-        qs[nn] |= (Yq[0] ^ Yq[1] ^ Yq[2] ^ Yq[3] ^ Yq[4])
+        qs[nn] |= G2table[Xq] << 3
+        qs[nn] |= G2table[Yq]
         nn += 1
 
-        Xq = Xq[0:4]
-        Yq = Yq[0:4]        
+        Xq &= 0b1111
+        Yq &= 0b1111        
 
     return qs
 
