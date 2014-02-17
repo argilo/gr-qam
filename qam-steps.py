@@ -230,6 +230,31 @@ for XYp in range(4):
 G1table = [(n >> 4) ^ ((n & 0b00100) >> 2) ^ (n & 1) for n in range(32)]
 G2table = [(n >> 4) ^ ((n & 0b01000) >> 3) ^ ((n & 0b00100) >> 2) ^ ((n & 0b00010) >> 1) ^ (n & 1) for n in range(32)]
 
+trellis_table_x = []
+trellis_table_y = []
+for state in range(16):
+    x_table = []
+    y_table = []
+    for xy in range(16):
+        nn = 0
+        qs = [0, 0, 0, 0, 0]
+        Xq = state
+        for n in range(4):
+            Xq = (Xq << 1) + ((xy >> n) & 1)
+
+            if n == 3:
+                qs[nn] |= G1table[Xq] << 3
+                nn += 1
+            qs[nn] |= G2table[Xq] << 3
+            nn += 1
+
+            Xq &= 0b1111
+
+        x_table.append((Xq, qs))
+        y_table.append((Xq, [(q >> 3) for q in qs]))
+    trellis_table_x.append(x_table)
+    trellis_table_y.append(y_table)
+
 XYp = 0
 
 Xq = 0
@@ -249,22 +274,9 @@ def trellis_code(rs):
 
     nn = 0
     XYp, X, Y = diff_precoder_table[XYp][A >> 10][B >> 10]
-    for n in range(4):
-        Xq = (Xq << 1) + ((X >> n) & 1)
-        Yq = (Yq << 1) + ((Y >> n) & 1)
-
-        if n == 3:
-            qs[nn] |= G1table[Xq] << 3
-            qs[nn] |= G1table[Yq]
-            nn += 1
-        qs[nn] |= G2table[Xq] << 3
-        qs[nn] |= G2table[Yq]
-        nn += 1
-
-        Xq &= 0b1111
-        Yq &= 0b1111        
-
-    return qs
+    Xq, qsx = trellis_table_x[Xq][X]
+    Yq, qsy = trellis_table_y[Yq][Y]
+    return [a|b|c for (a,b,c) in zip(qs, qsx, qsy)]
 
 
 ### 5.3 Frame Synchronization
