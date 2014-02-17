@@ -203,27 +203,40 @@ for n in range(128 * 60):
 
 ### 5.5 Trellis Coded Modulation
 
-Xp = 0
-Yp = 0
-
-def diff_precoder(W, Z):
-    global Xp, Yp
-
+def diff_precoder(W, Z, Xp, Yp):
     common = (Z & (Xp ^ Yp))
     X = W ^ Xp ^ common
     Y = Z ^ W ^ Yp ^ common
-    Xp = X
-    Yp = Y
     return X, Y
+
+diff_precoder_table = []
+for XYp in range(4):
+    Wlist = []
+    for W in range(16):
+        Zlist = []
+        for Z in range(16):
+            X = 0
+            Y = 0
+            Xp = (XYp & 0b10) >> 1
+            Yp = (XYp & 0b01)
+            for i in range(4):
+                Xp, Yp = diff_precoder((W >> i) & 1, (Z >> i) & 1, Xp, Yp)
+                X |= (Xp << i)
+                Y |= (Yp << i)
+            Zlist.append(((Xp << 1) + Yp, X, Y))
+        Wlist.append(Zlist)
+    diff_precoder_table.append(Wlist)
 
 G1table = [(n >> 4) ^ ((n & 0b00100) >> 2) ^ (n & 1) for n in range(32)]
 G2table = [(n >> 4) ^ ((n & 0b01000) >> 3) ^ ((n & 0b00100) >> 2) ^ ((n & 0b00010) >> 1) ^ (n & 1) for n in range(32)]
+
+XYp = 0
 
 Xq = 0
 Yq = 0
 
 def trellis_code(rs):
-    global Xq, Yq
+    global Xq, Yq, XYp
 
     A = (rs[1] << 7) | rs[0]
     B = (rs[3] << 7) | rs[2]
@@ -235,10 +248,10 @@ def trellis_code(rs):
         qs[n] |= ((B >> (2*n)) & 3) << 1
 
     nn = 0
+    XYp, X, Y = diff_precoder_table[XYp][A >> 10][B >> 10]
     for n in range(4):
-        X, Y = diff_precoder((A >> (n+10)) & 1, (B >> (n+10)) & 1)
-        Xq = (Xq << 1) + X
-        Yq = (Yq << 1) + Y
+        Xq = (Xq << 1) + ((X >> n) & 1)
+        Yq = (Yq << 1) + ((Y >> n) & 1)
 
         if n == 3:
             qs[nn] |= G1table[Xq] << 3
