@@ -188,30 +188,38 @@ void reed_solomon(uint8_t *message, uint8_t *output) {
 // 5.2 Interleaving
 
 uint8_t control_word = 0x06;
-/*
-I = 128
-J = 4
-commutator = 0
-registers = []
-pointers = [0] * I
-for i in range(I):
-    registers.append([0] * i * J)
+#define I 128
+#define J 4
 
-def interleave(symbols):
-    global commutator
+int commutator = 0;
+uint8_t registers[I][(I-1) * J];
+int pointers[I];
 
-    result = []
-    for symbol in symbols:
-        if commutator == 0:
-            result.append(symbol)
-        else:
-            p = pointers[commutator]
-            result.append(registers[commutator][p])
-            registers[commutator][p] = symbol
-            pointers[commutator] = (p + 1) % (commutator * J)
-        commutator = (commutator + 1) % I
-    return result
-*/
+void init_interleave() {
+    int i;
+
+    commutator = 0;
+    memset(registers, 0, I * ((I-1) * J));
+    memset(pointers, 0, I);
+}
+
+void interleave(uint8_t *symbols, int len) {
+    int i, p;
+    uint8_t temp;
+
+    for (i = 0; i < len; i++) {
+        if (commutator != 0) {
+            p = pointers[commutator];
+
+            temp = registers[commutator][p];
+            registers[commutator][p] = symbols[i];
+            symbols[i] = temp;
+
+            pointers[commutator] = (p + 1) % (commutator * J);
+        }
+        commutator = (commutator + 1) % I;
+    }
+}
 
 
 // 5.4 Randomization
@@ -332,7 +340,7 @@ void encode_frame(uint8_t *symbols, uint8_t *frame) {
         j += 128;
     }
 
-//    interleave(frame, 60 * 128);
+    interleave(frame, 60 * 128);
 
     for (j = 0; j < 60 * 128; j++) {
         frame[j] ^= rseq[j];
@@ -422,6 +430,7 @@ int main (int argc, char *argv[]) {
 
     init_rand();
     init_rs();
+    init_interleave();
 
     while (CHUNK_SIZE == fread(bytes, sizeof(uint8_t), CHUNK_SIZE, fin)) {
         sync_byte = bytes[0];
