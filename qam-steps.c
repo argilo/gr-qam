@@ -345,18 +345,24 @@ int main (int argc, char *argv[]) {
     fout = fopen(argv[2], "wb");
     if (fout == NULL) {
         fprintf(stderr, "Error: Could not write output file\n");
+        fclose(fin);
         exit(1);
     }
 
     bytes = malloc(sizeof(uint8_t) * (CHUNK_SIZE + 1));
     if (bytes == NULL) {
         fprintf(stderr, "Error: Out of memory.\n");
+        fclose(fin);
+        fclose(fout);
         exit(1);
     }
 
     chunk_repacked = malloc(sizeof(uint8_t) * (CHUNK_SIZE * 8 / 7));
     if (chunk_repacked == NULL) {
         fprintf(stderr, "Error: Out of memory.\n");
+        free(bytes);
+        fclose(fin);
+        fclose(fout);
         exit(1);
     }
 
@@ -365,6 +371,10 @@ int main (int argc, char *argv[]) {
         for (i = 0; i < CHUNK_SIZE; i += MPEG_PACKET_SIZE) {
             if (sync_byte != 0x47) {
                 fprintf(stderr, "Error: MPEG packet didn't begin with 0x47\n");
+                free(bytes);
+                free(chunk_repacked);
+                fclose(fin);
+                fclose(fout);
                 exit(1);
             }
             sync_byte = bytes[i+MPEG_PACKET_SIZE];
