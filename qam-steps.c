@@ -22,6 +22,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 // 4   MPEG Transport Framing
 
@@ -118,50 +119,71 @@ uint8_t compute_sum(uint8_t *bytes) {
     return result;
 }
 
-/*
+
 // 5.1 Reed-Solomon Coding
 
-gf_exp = [1] * 256
-gf_log = [0] * 128
-x = 1
-for i in range(1, 127):
-    x <<= 1
-    if x & 0b10000000 != 0:
-        x = (x & 0b1111111) ^ 0b0001001
-    gf_exp[i] = x
-    gf_log[x] = i
-for i in range(127, 256):
-    gf_exp[i] = gf_exp[i - 127]
+uint8_t gf_mul_table[128][128];
+uint8_t gf_exp[256];
+uint8_t gf_log[128];
 
-def gf_mul(x, y):
-    if x == 0 or y == 0:
-        return 0
-    return gf_exp[gf_log[x] + gf_log[y]]
+void init_rs() {
+    uint8_t x;
+    int i, j;
 
-gf_mul_table = [[gf_mul(x, y) for x in range(128)] for y in range(128)]
+    gf_exp[0] = 1;
+    gf_log[1] = 0;
 
-def gf_poly_eval(p, x):
-    y = p[0]
-    for i in range(1, len(p)):
-        y = gf_mul_table[y][x] ^ p[i]
-    return y
+    x = 1;
+    for (i = 1; i < 127; i++) {
+        x <<= 1;
+        if (x & 0x80) {
+            x = (x & 0x7F) ^ 0x09;
+        }
+        gf_exp[i] = x;
+        gf_log[x] = i;
+    }
+    for (; i < 256; i++) {
+        gf_exp[i] = gf_exp[i - 127];
+    }
 
-def reed_solomon(message):
-    # Generator polynomial from p.7 of ANSI/SCTE 07 2013
-    g = [1, gf_exp[52], gf_exp[116], gf_exp[119], gf_exp[61], gf_exp[15]]
+    for (i = 0; i < 128; i++) {
+        for (j = 0; j < 128; j++) {
+            if ((i == 0) || (j == 0)) {
+                gf_mul_table[i][j] = 0;
+            } else {
+                gf_mul_table[i][j] = gf_exp[gf_log[i] + gf_log[j]];
+            }
+        }
+    }
+}
 
-    dividend = message + [0, 0, 0, 0, 0]
-    for i in range(len(message)):
-        coeff = dividend[i]
-        for j in range(1, len(g)):
-            dividend[i + j] ^= gf_mul_table[coeff][g[j]]
+uint8_t gf_poly_eval(uint8_t *p, int len, uint8_t x) {
+    uint8_t y = p[0];
+    int i;
 
-    result = message + dividend[-5:] + [0]
-    result[-1] = gf_poly_eval(result, gf_exp[6])
+    for (i = 1; i < len; i++) {
+        y = gf_mul_table[y][x] ^ p[i];
+    }
+    return y;
+}
 
-    return result
-*/
+void reed_solomon(uint8_t *message, uint8_t *output) {
+    // Generator polynomial from p.7 of ANSI/SCTE 07 2013
+    uint8_t g[] = {1, gf_exp[52], gf_exp[116], gf_exp[119], gf_exp[61], gf_exp[15]};
+    int i, j;
 
+    memcpy(output, message, 122);
+    memset(output + 122, 0, 6);
+
+    for (i = 0; i < 122; i++) {
+        for (j = 1; j < 6; j++) {
+            output[i + j] ^= gf_mul_table[output[i]][g[j]];
+        }
+        output[i] = message[i];
+    }
+
+    output[127] = gf_poly_eval(output, 128, gf_exp[6]);
+}
 
 // 5.2 Interleaving
 
@@ -305,7 +327,7 @@ void encode_frame(uint8_t *symbols, uint8_t *frame) {
     int i = 0, j = 0;
 
     while (i < 60 * 122) {
-//        reed_solomon(symbols + i, frame + j);
+        reed_solomon(symbols + i, frame + j);
         i += 122;
         j += 128;
     }
@@ -322,6 +344,10 @@ void encode_frame(uint8_t *symbols, uint8_t *frame) {
     frame[j++] = 0x6C;
     frame[j++] = control_word << 3;
     frame[j++] = 0x00;
+
+    for (i = 0; i < j; i++) {
+        printf("%02x\n", frame[i]);
+    }
 }
 
 // Convert MPEG transport stream to QAM symbols
@@ -395,7 +421,8 @@ int main (int argc, char *argv[]) {
     }
 
     init_rand();
-/*
+    init_rs();
+
     while (CHUNK_SIZE == fread(bytes, sizeof(uint8_t), CHUNK_SIZE, fin)) {
         sync_byte = bytes[0];
         for (i = 0; i < CHUNK_SIZE; i += MPEG_PACKET_SIZE) {
@@ -421,11 +448,11 @@ int main (int argc, char *argv[]) {
         }
 
         for (i = 0; i < ENCODED_WORDS; i += 4) {
-            trellis_code(chunk_encoded + i, trellis_symbols);
+//            trellis_code(chunk_encoded + i, trellis_symbols);
             fwrite(trellis_symbols, sizeof(uint8_t), 5, fout);
         }
     }
-*/
+
     free(bytes);
     free(chunk_repacked);
     free(chunk_encoded);
