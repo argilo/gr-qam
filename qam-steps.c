@@ -162,10 +162,11 @@ def reed_solomon(message):
     return result
 */
 
-/*
+
 // 5.2 Interleaving
 
-control_word = 0b0110
+uint8_t control_word = 0x06;
+/*
 I = 128
 J = 4
 commutator = 0
@@ -190,26 +191,32 @@ def interleave(symbols):
     return result
 */
 
-/*
+
 // 5.4 Randomization
 
-rseq = []
-c2 = 0b1111111
-c1 = 0b1111111
-c0 = 0b1111111
-for n in range(128 * 60):
-    rseq.append(c2)
-    c2_new = c1
-    c1_new = c0 ^ c2
-    c0_new = c2
-    for x in range(3):
-        c0_new <<= 1
-        if c0_new & 0b10000000 != 0:
-            c0_new = (c0_new & 0b1111111) ^ 0b0001001
-    c2 = c2_new
-    c1 = c1_new
-    c0 = c0_new
-*/
+uint8_t rseq[60 * 128];
+
+void init_rand() {
+    uint8_t c2 = 0x7F, c1 = 0x7F, c0 = 0x7F;
+    uint8_t c2_new, c1_new, c0_new;
+    int n, i;
+
+    for (n = 0; n < 60 * 128; n++) {
+        rseq[n] = c2;
+        c2_new = c1;
+        c1_new = c0 ^ c2;
+        c0_new = c2;
+        for (i = 0; i < 3; i++) {
+            c0_new <<= 1;
+            if (c0_new & 0x80) {
+                c0_new = (c0_new & 0x7F) ^ 0x09;
+            }
+        }
+        c2 = c2_new;
+        c1 = c1_new;
+        c0 = c0_new;
+    }
+}
 
 /*
 // 5.5 Trellis Coded Modulation
@@ -290,23 +297,32 @@ def trellis_code(rs):
     return [a|b|c for (a,b,c) in zip(qs, qsx, qsy)]
 */
 
-/*
 // 5.3 Frame Synchronization
 
 // Encodes 60 Reed-Solomon blocks (each consisting of 122 7-bit symbols)
 // into a frame.
-def encode_frame(symbols):
-    frame = []
+void encode_frame(uint8_t *symbols, uint8_t *frame) {
+    int i = 0, j = 0;
 
-    for i in range(0, len(symbols), 122):
-        frame = frame + interleave(reed_solomon(symbols[i:i+122]))
+    while (i < 60 * 122) {
+//        reed_solomon(symbols + i, frame + j);
+        i += 122;
+        j += 128;
+    }
 
-    for i in range(len(frame)):
-        frame[i] ^= rseq[i]
+//    interleave(frame, 60 * 128);
 
-    return frame + [0x75, 0x2C, 0x0D, 0x6C, control_word << 3, 0x00]
-*/
+    for (j = 0; j < 60 * 128; j++) {
+        frame[j] ^= rseq[j];
+    }
 
+    frame[j++] = 0x75;
+    frame[j++] = 0x2C;
+    frame[j++] = 0x0D;
+    frame[j++] = 0x6C;
+    frame[j++] = control_word << 3;
+    frame[j++] = 0x00;
+}
 
 // Convert MPEG transport stream to QAM symbols
 
@@ -323,12 +339,14 @@ void repack_bytes(uint8_t *bytes, uint8_t *result) {
 
 
 #define MPEG_PACKET_SIZE 188
-#define CHUNK_SIZE MPEG_PACKET_SIZE * 6405
+#define CHUNK_SIZE (MPEG_PACKET_SIZE * 6405)
+#define ENCODED_WORDS (CHUNK_SIZE * 8 / 7 / 60 / 122 * (60 * 128 + 6))
 
 int main (int argc, char *argv[]) {
     FILE *fin, *fout;
-    uint8_t *bytes, *chunk_repacked;
+    uint8_t *bytes, *chunk_repacked, *chunk_encoded;
     uint8_t sync_byte;
+    uint8_t trellis_symbols[5];
     int i;
 
     if (argc != 3) {
@@ -366,6 +384,18 @@ int main (int argc, char *argv[]) {
         exit(1);
     }
 
+    chunk_encoded = malloc(sizeof(uint8_t) * ENCODED_WORDS);
+    if (chunk_encoded == NULL) {
+        fprintf(stderr, "Error: Out of memory.\n");
+        free(bytes);
+        free(chunk_repacked);
+        fclose(fin);
+        fclose(fout);
+        exit(1);
+    }
+
+    init_rand();
+/*
     while (CHUNK_SIZE == fread(bytes, sizeof(uint8_t), CHUNK_SIZE, fin)) {
         sync_byte = bytes[0];
         for (i = 0; i < CHUNK_SIZE; i += MPEG_PACKET_SIZE) {
@@ -373,6 +403,7 @@ int main (int argc, char *argv[]) {
                 fprintf(stderr, "Error: MPEG packet didn't begin with 0x47\n");
                 free(bytes);
                 free(chunk_repacked);
+                free(chunk_encoded);
                 fclose(fin);
                 fclose(fout);
                 exit(1);
@@ -384,19 +415,20 @@ int main (int argc, char *argv[]) {
         for (i = 0; i < CHUNK_SIZE / 7; i++) {
             repack_bytes(bytes + 1 + (i*7), chunk_repacked + (i*8));
         }
-    }
-/*
-            chunk_encoded = []
-            for i in range(0, len(chunk_repacked), 122*60):
-                chunk_encoded += encode_frame(chunk_repacked[i:i+122*60])
-            print len(chunk_encoded)
 
-            for i in range(0, len(chunk_encoded), 4):
-                fout.write(bytearray(trellis_code(chunk_encoded[i:i+4])))
-            fout.flush()
+        for (i = 0; i < 188; i++) {
+            encode_frame(chunk_repacked + i*60*122, chunk_encoded + i*(60*128+6));
+        }
+
+        for (i = 0; i < ENCODED_WORDS; i += 4) {
+            trellis_code(chunk_encoded + i, trellis_symbols);
+            fwrite(trellis_symbols, sizeof(uint8_t), 5, fout);
+        }
+    }
 */
     free(bytes);
     free(chunk_repacked);
+    free(chunk_encoded);
     fclose(fin);
     fclose(fout);
 }
