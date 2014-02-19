@@ -248,36 +248,54 @@ void init_rand() {
     }
 }
 
-/*
+
 // 5.5 Trellis Coded Modulation
 
-def diff_precoder(W, Z, Xp, Yp):
-    common = (Z & (Xp ^ Yp))
-    X = W ^ Xp ^ common
-    Y = Z ^ W ^ Yp ^ common
-    return X, Y
+void diff_precoder(uint8_t W, uint8_t Z, uint8_t *Xp, uint8_t *Yp) {
+    uint8_t common, newX, newY;
 
-diff_precoder_table = []
-for XYp in range(4):
-    Wlist = []
-    for W in range(16):
-        Zlist = []
-        for Z in range(16):
-            X = 0
-            Y = 0
-            Xp = (XYp & 0b10) >> 1
-            Yp = (XYp & 0b01)
-            for i in range(4):
-                Xp, Yp = diff_precoder((W >> i) & 1, (Z >> i) & 1, Xp, Yp)
-                X |= (Xp << i)
-                Y |= (Yp << i)
-            Zlist.append(((Xp << 1) + Yp, X, Y))
-        Wlist.append(Zlist)
-    diff_precoder_table.append(Wlist)
+    common = (Z & (*Xp ^ *Yp));
+    newX = W ^ *Xp ^ common;
+    newY = Z ^ W ^ *Yp ^ common;
 
-G1table = [(n >> 4) ^ ((n & 0b00100) >> 2) ^ (n & 1) for n in range(32)]
-G2table = [(n >> 4) ^ ((n & 0b01000) >> 3) ^ ((n & 0b00100) >> 2) ^ ((n & 0b00010) >> 1) ^ (n & 1) for n in range(32)]
+    *Xp = newX;
+    *Yp = newY;
+}
 
+uint8_t diff_precoder_table[4][16][16][3];
+uint8_t G1table[32];
+uint8_t G2table[32];
+
+void init_trellis() {
+    uint8_t XYp, W, Z, X, Y, Xp, Yp;
+    int i;
+
+    for (XYp = 0; XYp < 4; XYp++) {
+        for (W = 0; W < 16; W++) {
+            for (Z = 0; Z < 16; Z++) {
+                X = 0;
+                Y = 0;
+                Xp = (XYp & 0b10) >> 1;
+                Yp = (XYp & 0b01);
+                for (i = 0; i < 4; i++) {
+                    diff_precoder((W >> i) & 1, (Z >> i) & 1, &Xp, &Yp);
+                    X |= (Xp << i);
+                    Y |= (Yp << i);
+                }
+                diff_precoder_table[XYp][W][Z][0] = (Xp << 1) + Yp;
+                diff_precoder_table[XYp][W][Z][1] = X;
+                diff_precoder_table[XYp][W][Z][2] = Y;
+            }
+        }
+    }
+
+    for (i = 0; i < 32; i++) {
+        G1table[i] = (i >> 4) ^ ((i & 0x04) >> 2) ^ (i & 1);
+        G2table[i] = (i >> 4) ^ ((i & 0x08) >> 3) ^ ((i & 0x04) >> 2) ^ ((i & 0x02) >> 1) ^ (i & 1);
+    }
+}
+
+/*
 trellis_table_x = []
 trellis_table_y = []
 for state in range(16):
@@ -352,10 +370,6 @@ void encode_frame(uint8_t *symbols, uint8_t *frame) {
     frame[j++] = 0x6C;
     frame[j++] = control_word << 3;
     frame[j++] = 0x00;
-
-    for (i = 0; i < j; i++) {
-        printf("%02x\n", frame[i]);
-    }
 }
 
 // Convert MPEG transport stream to QAM symbols
@@ -431,6 +445,7 @@ int main (int argc, char *argv[]) {
     init_rand();
     init_rs();
     init_interleave();
+    init_trellis();
 
     while (CHUNK_SIZE == fread(bytes, sizeof(uint8_t), CHUNK_SIZE, fin)) {
         sync_byte = bytes[0];
