@@ -319,7 +319,6 @@ def trellis_code(rs):
         qs[n] |= ((A >> (2*n)) & 3) << 4
         qs[n] |= ((B >> (2*n)) & 3) << 1
 
-    nn = 0
     XYp, X, Y = diff_precoder_table[XYp][A >> 10][B >> 10]
     Xq, qsx = trellis_table_x[Xq][X]
     Yq, qsy = trellis_table_y[Yq][Y]
