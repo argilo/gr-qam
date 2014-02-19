@@ -265,10 +265,12 @@ void diff_precoder(uint8_t W, uint8_t Z, uint8_t *Xp, uint8_t *Yp) {
 uint8_t diff_precoder_table[4][16][16][3];
 uint8_t G1table[32];
 uint8_t G2table[32];
+uint8_t trellis_table_x[16][16][6];
+uint8_t trellis_table_y[16][16][6];
 
 void init_trellis() {
-    uint8_t XYp, W, Z, X, Y, Xp, Yp;
-    int i;
+    uint8_t XYp, W, Z, X, Y, Xp, Yp, state, xy, Xq;
+    int i, n;
 
     for (XYp = 0; XYp < 4; XYp++) {
         for (W = 0; W < 16; W++) {
@@ -293,57 +295,60 @@ void init_trellis() {
         G1table[i] = (i >> 4) ^ ((i & 0x04) >> 2) ^ (i & 1);
         G2table[i] = (i >> 4) ^ ((i & 0x08) >> 3) ^ ((i & 0x04) >> 2) ^ ((i & 0x02) >> 1) ^ (i & 1);
     }
+
+    memset(trellis_table_x, 0, 16*16*6);
+    memset(trellis_table_y, 0, 16*16*6);
+    for (state = 0; state < 16; state++) {
+        for (xy = 0; xy < 16; xy++) {
+            i = 0;
+            Xq = state;
+            for (n = 0; n < 4; n++) {
+                Xq = (Xq << 1) + ((xy >> n) & 1);
+
+                if (n == 3) {
+                    trellis_table_x[state][xy][i+1] |= G1table[Xq] << 3;
+                    trellis_table_y[state][xy][i+1] |= G1table[Xq];
+                    i += 1;
+                }
+                trellis_table_x[state][xy][i+1] |= G2table[Xq] << 3;
+                trellis_table_y[state][xy][i+1] |= G2table[Xq];
+                i += 1;
+
+                Xq &= 0x0F;
+            }
+
+            trellis_table_x[state][xy][0] = Xq;
+            trellis_table_y[state][xy][0] = Xq;
+        }
+    }
 }
 
-/*
-trellis_table_x = []
-trellis_table_y = []
-for state in range(16):
-    x_table = []
-    y_table = []
-    for xy in range(16):
-        nn = 0
-        qs = [0, 0, 0, 0, 0]
-        Xq = state
-        for n in range(4):
-            Xq = (Xq << 1) + ((xy >> n) & 1)
+void trellis_code(uint8_t *rs, uint8_t *qs) {
+    static uint8_t Xq = 0, Yq = 0, XYp = 0;
+    uint8_t X, Y;
+    int A, B, n;
 
-            if n == 3:
-                qs[nn] |= G1table[Xq] << 3
-                nn += 1
-            qs[nn] |= G2table[Xq] << 3
-            nn += 1
+    A = (rs[1] << 7) | rs[0];
+    B = (rs[3] << 7) | rs[2];
 
-            Xq &= 0b1111
+    memset(qs, 0, 5);
 
-        x_table.append((Xq, qs))
-        y_table.append((Xq, [(q >> 3) for q in qs]))
-    trellis_table_x.append(x_table)
-    trellis_table_y.append(y_table)
+    for (n = 0; n < 5; n++) {
+        qs[n] |= ((A >> (2*n)) & 3) << 4;
+        qs[n] |= ((B >> (2*n)) & 3) << 1;
+    }
 
-XYp = 0
+    X = diff_precoder_table[XYp][A >> 10][B >> 10][1];
+    Y = diff_precoder_table[XYp][A >> 10][B >> 10][2];
+    XYp = diff_precoder_table[XYp][A >> 10][B >> 10][0];
 
-Xq = 0
-Yq = 0
-
-def trellis_code(rs):
-    global Xq, Yq, XYp
-
-    A = (rs[1] << 7) | rs[0]
-    B = (rs[3] << 7) | rs[2]
-
-    qs = [0, 0, 0, 0, 0]
-
-    for n in range(5):
-        qs[n] |= ((A >> (2*n)) & 3) << 4
-        qs[n] |= ((B >> (2*n)) & 3) << 1
-
-    nn = 0
-    XYp, X, Y = diff_precoder_table[XYp][A >> 10][B >> 10]
-    Xq, qsx = trellis_table_x[Xq][X]
-    Yq, qsy = trellis_table_y[Yq][Y]
-    return [a|b|c for (a,b,c) in zip(qs, qsx, qsy)]
-*/
+    for (n = 0; n < 5; n++) {
+        qs[n] |= trellis_table_x[Xq][X][1+n];
+        qs[n] |= trellis_table_y[Yq][Y][1+n];
+    }
+    Xq = trellis_table_x[Xq][X][0];
+    Yq = trellis_table_y[Yq][Y][0];
+}
 
 // 5.3 Frame Synchronization
 
@@ -472,7 +477,7 @@ int main (int argc, char *argv[]) {
         }
 
         for (i = 0; i < ENCODED_WORDS; i += 4) {
-//            trellis_code(chunk_encoded + i, trellis_symbols);
+            trellis_code(chunk_encoded + i, trellis_symbols);
             fwrite(trellis_symbols, sizeof(uint8_t), 5, fout);
         }
     }
