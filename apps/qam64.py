@@ -2,7 +2,7 @@
 ##################################################
 # Gnuradio Python Flow Graph
 # Title: Qam64
-# Generated: Mon Feb 10 21:50:42 2014
+# Generated: Wed Feb 19 18:19:05 2014
 ##################################################
 
 from gnuradio import blocks
@@ -29,7 +29,7 @@ class qam64(grc_wxgui.top_block_gui):
         # Variables
         ##################################################
         self.samp_rate = samp_rate = 5056941 * 2
-        self.rrc_taps = rrc_taps = 100
+        self.rrc_taps = rrc_taps = 20
         self.gain = gain = 0
         self.center_freq = center_freq = 441000000
 
@@ -72,7 +72,7 @@ class qam64(grc_wxgui.top_block_gui):
         self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_ccc(2, (firdes.root_raised_cosine(0.14, samp_rate, samp_rate/2, 0.18, rrc_taps)))
         self.interp_fir_filter_xxx_0.declare_sample_delay(0)
         self.digital_chunks_to_symbols_xx_0 = digital.chunks_to_symbols_bc(([complex(1,1), complex(1,-1), complex(1,-3), complex(-3,-1), complex(-3,1), complex(1,3), complex(-3,-3), complex(-3,3), complex(-1,1), complex(-1,-1), complex(3,1), complex(-1,3), complex(-1,-3), complex(3,-1), complex(3,-3), complex(3,3), complex(5,1), complex(1,-5), complex(1,-7), complex(-7,-1), complex(-3,5), complex(5,3), complex(-7,-3), complex(-3,7), complex(-1,5), complex(-5,-1), complex(7,1), complex(-1,7), complex(-5,-3), complex(3,-5), complex(3,-7), complex(7,3), complex(1,5), complex(5,-1), complex(5,-3), complex(-3,-5), complex(-7,1), complex(1,7), complex(-3,-7), complex(-7,3), complex(-5,1), complex(-1,-5), complex(3,5), complex(-5,3), complex(-1,-7), complex(7,-1), complex(7,-3), complex(3,7), complex(5,5), complex(5,-5), complex(5,-7), complex(-7,-5), complex(-7,5), complex(5,7), complex(-7,-7), complex(-7,7), complex(-5,5), complex(-5,-5), complex(7,5), complex(-5,7), complex(-5,-7), complex(7,-5), complex(7,-7), complex(7,7)]), 1)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, "/home/argilo/git/qam-tx/qam.dat", False)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, "/home/argilo/git/qam-tx/out.fifo", False)
 
         ##################################################
         # Connections
@@ -89,8 +89,8 @@ class qam64(grc_wxgui.top_block_gui):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.osmosdr_sink_0.set_sample_rate(self.samp_rate)
         self.interp_fir_filter_xxx_0.set_taps((firdes.root_raised_cosine(0.14, self.samp_rate, self.samp_rate/2, 0.18, self.rrc_taps)))
+        self.osmosdr_sink_0.set_sample_rate(self.samp_rate)
 
     def get_rrc_taps(self):
         return self.rrc_taps
