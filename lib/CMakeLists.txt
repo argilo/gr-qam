@@ -30,6 +30,7 @@ list(APPEND qam_sources
     reed_solomon_bb_impl.cc
     interleaver_bb_impl.cc
     randomizer_bb_impl.cc
+    frame_sync_enc_bb_impl.cc
 )
 
 add_library(gnuradio-qam SHARED ${qam_sources})

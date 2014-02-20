@@ -12,6 +12,7 @@
 #include "qam/reed_solomon_bb.h"
 #include "qam/interleaver_bb.h"
 #include "qam/randomizer_bb.h"
+#include "qam/frame_sync_enc_bb.h"
 %}
 
 
@@ -23,3 +24,5 @@ GR_SWIG_BLOCK_MAGIC2(qam, reed_solomon_bb);
 GR_SWIG_BLOCK_MAGIC2(qam, interleaver_bb);
 %include "qam/randomizer_bb.h"
 GR_SWIG_BLOCK_MAGIC2(qam, randomizer_bb);
+%include "qam/frame_sync_enc_bb.h"
+GR_SWIG_BLOCK_MAGIC2(qam, frame_sync_enc_bb);
