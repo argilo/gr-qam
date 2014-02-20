@@ -24,5 +24,6 @@ install(FILES
     api.h
     transport_framing_bb.h
     reed_solomon_bb.h
-    interleaver_bb.h DESTINATION include/qam
+    interleaver_bb.h
+    randomizer_bb.h DESTINATION include/qam
 )

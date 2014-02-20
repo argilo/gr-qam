@@ -20,5 +20,6 @@
 install(FILES
     qam_transport_framing_bb.xml
     qam_reed_solomon_bb.xml
-    qam_interleaver_bb.xml DESTINATION share/gnuradio/grc/blocks
+    qam_interleaver_bb.xml
+    qam_randomizer_bb.xml DESTINATION share/gnuradio/grc/blocks
 )
