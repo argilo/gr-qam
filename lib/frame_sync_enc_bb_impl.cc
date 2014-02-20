@@ -72,21 +72,20 @@ namespace gr {
         int i = 0, j = 0;
         while (i < noutput_items) {
             memcpy(out + i, in + j, 60 * 128);
-
-            out[j++] = 0x75;
-            out[j++] = 0x2C;
-            out[j++] = 0x0D;
-            out[j++] = 0x6C;
-            out[j++] = control_word << 3;
-            out[j++] = 0x00;
-
-            i += 60 * 128 + 6;
+            i += 60 * 128;
             j += 60 * 128;
+
+            out[i++] = 0x75;
+            out[i++] = 0x2C;
+            out[i++] = 0x0D;
+            out[i++] = 0x6C;
+            out[i++] = control_word << 3;
+            out[i++] = 0x00;
         }
 
         // Tell runtime system how many input items we consumed on
         // each input stream.
-        consume_each (noutput_items);
+        consume_each (j);
 
         // Tell runtime system how many output items we produced.
         return noutput_items;
