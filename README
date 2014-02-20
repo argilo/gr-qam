@@ -47,4 +47,13 @@ I/Q values for the "Chunks to Symbols" block in the flow graph.
 The next step for the project is to replace qam-steps.py with optimized
 GNU Radio blocks so that the transmitter can run in real time.
 
+Build instructions:
+
+    mkdir build
+    cd build
+    cmake ../
+    make
+    sudo make install
+    sudo ldconfig
+
 Contributions are welcome!
