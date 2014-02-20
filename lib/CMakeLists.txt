@@ -31,6 +31,7 @@ list(APPEND qam_sources
     interleaver_bb_impl.cc
     randomizer_bb_impl.cc
     frame_sync_enc_bb_impl.cc
+    trellis_enc_bb_impl.cc
 )
 
 add_library(gnuradio-qam SHARED ${qam_sources})

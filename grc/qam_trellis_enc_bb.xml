@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<block>
+  <name>Trellis Encoder</name>
+  <key>qam_trellis_enc_bb</key>
+  <category>QAM</category>
+  <import>import qam</import>
+  <make>qam.trellis_enc_bb()</make>
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>byte</type>
+  </sink>
+
+  <!-- Make one 'source' node per output. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <source>
+    <name>out</name>
+    <type>byte</type>
+  </source>
+</block>

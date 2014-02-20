@@ -13,6 +13,7 @@
 #include "qam/interleaver_bb.h"
 #include "qam/randomizer_bb.h"
 #include "qam/frame_sync_enc_bb.h"
+#include "qam/trellis_enc_bb.h"
 %}
 
 
@@ -26,3 +27,5 @@ GR_SWIG_BLOCK_MAGIC2(qam, interleaver_bb);
 GR_SWIG_BLOCK_MAGIC2(qam, randomizer_bb);
 %include "qam/frame_sync_enc_bb.h"
 GR_SWIG_BLOCK_MAGIC2(qam, frame_sync_enc_bb);
+%include "qam/trellis_enc_bb.h"
+GR_SWIG_BLOCK_MAGIC2(qam, trellis_enc_bb);

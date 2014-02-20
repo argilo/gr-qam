@@ -26,5 +26,6 @@ install(FILES
     reed_solomon_bb.h
     interleaver_bb.h
     randomizer_bb.h
-    frame_sync_enc_bb.h DESTINATION include/qam
+    frame_sync_enc_bb.h
+    trellis_enc_bb.h DESTINATION include/qam
 )

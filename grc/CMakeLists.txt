@@ -22,5 +22,6 @@ install(FILES
     qam_reed_solomon_bb.xml
     qam_interleaver_bb.xml
     qam_randomizer_bb.xml
-    qam_frame_sync_enc_bb.xml DESTINATION share/gnuradio/grc/blocks
+    qam_frame_sync_enc_bb.xml
+    qam_trellis_enc_bb.xml DESTINATION share/gnuradio/grc/blocks
 )
