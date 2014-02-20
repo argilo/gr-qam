@@ -28,6 +28,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND qam_sources
     transport_framing_bb_impl.cc
     reed_solomon_bb_impl.cc
+    interleaver_bb_impl.cc
 )
 
 add_library(gnuradio-qam SHARED ${qam_sources})

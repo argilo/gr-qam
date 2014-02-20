@@ -196,8 +196,6 @@ uint8_t registers[I][(I-1) * J];
 int pointers[I];
 
 void init_interleave() {
-    int i;
-
     commutator = 0;
     memset(registers, 0, I * ((I-1) * J));
     memset(pointers, 0, I);
