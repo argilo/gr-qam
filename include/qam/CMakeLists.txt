@@ -22,5 +22,6 @@
 ########################################################################
 install(FILES
     api.h
-    transport_framing_bb.h DESTINATION include/qam
+    transport_framing_bb.h
+    reed_solomon_bb.h DESTINATION include/qam
 )
