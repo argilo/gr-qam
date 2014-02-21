@@ -44,6 +44,12 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
         set_output_multiple(5);
+
+        init_trellis();
+
+        Xq = 0;
+        Yq = 0;
+        XYp = 0;
     }
 
     /*
@@ -51,9 +57,6 @@ namespace gr {
      */
     trellis_enc_bb_impl::~trellis_enc_bb_impl()
     {
-        set_output_multiple(5);
-
-        init_trellis();
     }
 
     void
@@ -129,7 +132,6 @@ namespace gr {
     }
 
     void trellis_enc_bb_impl::trellis_code(const unsigned char *rs, unsigned char *qs) {
-        static unsigned char Xq = 0, Yq = 0, XYp = 0;
         unsigned char X, Y;
         int A, B, n;
 

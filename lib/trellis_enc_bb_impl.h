@@ -34,6 +34,7 @@ namespace gr {
       unsigned char G2table[32];
       unsigned char trellis_table_x[16][16][6];
       unsigned char trellis_table_y[16][16][6];
+      unsigned char Xq, Yq, XYp;
 
       void diff_precoder(unsigned char W, unsigned char Z, unsigned char *Xp, unsigned char *Yp);
       void init_trellis();
