@@ -2,7 +2,7 @@
 ##################################################
 # Gnuradio Python Flow Graph
 # Title: Qam64
-# Generated: Wed Feb 19 18:19:05 2014
+# Generated: Thu Feb 20 20:38:27 2014
 ##################################################
 
 from gnuradio import blocks
@@ -16,6 +16,7 @@ from gnuradio.wxgui import forms
 from grc_gnuradio import wxgui as grc_wxgui
 from optparse import OptionParser
 import osmosdr
+import qam
 import wx
 
 class qam64(grc_wxgui.top_block_gui):
@@ -59,6 +60,12 @@ class qam64(grc_wxgui.top_block_gui):
         	proportion=1,
         )
         self.Add(_gain_sizer)
+        self.qam_trellis_enc_bb_0 = qam.trellis_enc_bb()
+        self.qam_transport_framing_bb_0 = qam.transport_framing_bb()
+        self.qam_reed_solomon_bb_0 = qam.reed_solomon_bb()
+        self.qam_randomizer_bb_0 = qam.randomizer_bb()
+        self.qam_interleaver_bb_0 = qam.interleaver_bb(128,4)
+        self.qam_frame_sync_enc_bb_0 = qam.frame_sync_enc_bb(6)
         self.osmosdr_sink_0 = osmosdr.sink( args="numchan=" + str(1) + " " + "bladerf=0,buffers=128,buflen=32768" )
         self.osmosdr_sink_0.set_sample_rate(samp_rate)
         self.osmosdr_sink_0.set_center_freq(center_freq, 0)
@@ -72,14 +79,22 @@ class qam64(grc_wxgui.top_block_gui):
         self.interp_fir_filter_xxx_0 = filter.interp_fir_filter_ccc(2, (firdes.root_raised_cosine(0.14, samp_rate, samp_rate/2, 0.18, rrc_taps)))
         self.interp_fir_filter_xxx_0.declare_sample_delay(0)
         self.digital_chunks_to_symbols_xx_0 = digital.chunks_to_symbols_bc(([complex(1,1), complex(1,-1), complex(1,-3), complex(-3,-1), complex(-3,1), complex(1,3), complex(-3,-3), complex(-3,3), complex(-1,1), complex(-1,-1), complex(3,1), complex(-1,3), complex(-1,-3), complex(3,-1), complex(3,-3), complex(3,3), complex(5,1), complex(1,-5), complex(1,-7), complex(-7,-1), complex(-3,5), complex(5,3), complex(-7,-3), complex(-3,7), complex(-1,5), complex(-5,-1), complex(7,1), complex(-1,7), complex(-5,-3), complex(3,-5), complex(3,-7), complex(7,3), complex(1,5), complex(5,-1), complex(5,-3), complex(-3,-5), complex(-7,1), complex(1,7), complex(-3,-7), complex(-7,3), complex(-5,1), complex(-1,-5), complex(3,5), complex(-5,3), complex(-1,-7), complex(7,-1), complex(7,-3), complex(3,7), complex(5,5), complex(5,-5), complex(5,-7), complex(-7,-5), complex(-7,5), complex(5,7), complex(-7,-7), complex(-7,7), complex(-5,5), complex(-5,-5), complex(7,5), complex(-5,7), complex(-5,-7), complex(7,-5), complex(7,-7), complex(7,7)]), 1)
-        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, "/home/argilo/git/qam-tx/out.fifo", False)
+        self.blocks_packed_to_unpacked_xx_0 = blocks.packed_to_unpacked_bb(7, gr.GR_MSB_FIRST)
+        self.blocks_file_source_0 = blocks.file_source(gr.sizeof_char*1, "/home/argilo/git/gr-qam/in.fifo", False)
 
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.blocks_file_source_0, 0), (self.digital_chunks_to_symbols_xx_0, 0))
         self.connect((self.digital_chunks_to_symbols_xx_0, 0), (self.interp_fir_filter_xxx_0, 0))
         self.connect((self.interp_fir_filter_xxx_0, 0), (self.osmosdr_sink_0, 0))
+        self.connect((self.qam_reed_solomon_bb_0, 0), (self.qam_interleaver_bb_0, 0))
+        self.connect((self.qam_trellis_enc_bb_0, 0), (self.digital_chunks_to_symbols_xx_0, 0))
+        self.connect((self.blocks_file_source_0, 0), (self.qam_transport_framing_bb_0, 0))
+        self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qam_reed_solomon_bb_0, 0))
+        self.connect((self.qam_transport_framing_bb_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
+        self.connect((self.qam_interleaver_bb_0, 0), (self.qam_randomizer_bb_0, 0))
+        self.connect((self.qam_randomizer_bb_0, 0), (self.qam_frame_sync_enc_bb_0, 0))
+        self.connect((self.qam_frame_sync_enc_bb_0, 0), (self.qam_trellis_enc_bb_0, 0))
 
 
 # QT sink close method reimplementation
