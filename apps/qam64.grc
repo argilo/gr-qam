@@ -819,10 +819,10 @@
     </param>
   </block>
   <block>
-    <key>qam_transport_framing_bb</key>
+    <key>qam_transport_framing_enc_bb</key>
     <param>
       <key>id</key>
-      <value>qam_transport_framing_bb_0</value>
+      <value>qam_transport_framing_enc_bb_0</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -965,7 +965,7 @@
   </connection>
   <connection>
     <source_block_id>blocks_file_source_0</source_block_id>
-    <sink_block_id>qam_transport_framing_bb_0</sink_block_id>
+    <sink_block_id>qam_transport_framing_enc_bb_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -976,7 +976,7 @@
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>qam_transport_framing_bb_0</source_block_id>
+    <source_block_id>qam_transport_framing_enc_bb_0</source_block_id>
     <sink_block_id>blocks_packed_to_unpacked_xx_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>

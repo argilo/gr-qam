@@ -26,7 +26,7 @@ include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
 list(APPEND qam_sources
-    transport_framing_bb_impl.cc
+    transport_framing_enc_bb_impl.cc
     reed_solomon_enc_bb_impl.cc
     interleaver_bb_impl.cc
     randomizer_bb_impl.cc

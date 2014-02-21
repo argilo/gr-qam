@@ -18,7 +18,7 @@
 # Boston, MA 02110-1301, USA.
 
 install(FILES
-    qam_transport_framing_bb.xml
+    qam_transport_framing_enc_bb.xml
     qam_reed_solomon_enc_bb.xml
     qam_interleaver_bb.xml
     qam_randomizer_bb.xml

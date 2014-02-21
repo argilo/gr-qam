@@ -18,10 +18,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_QAM_TRANSPORT_FRAMING_BB_IMPL_H
-#define INCLUDED_QAM_TRANSPORT_FRAMING_BB_IMPL_H
+#ifndef INCLUDED_QAM_TRANSPORT_FRAMING_ENC_BB_IMPL_H
+#define INCLUDED_QAM_TRANSPORT_FRAMING_ENC_BB_IMPL_H
 
-#include <qam/transport_framing_bb.h>
+#include <qam/transport_framing_enc_bb.h>
 
 namespace gr {
   namespace qam {
@@ -63,14 +63,14 @@ namespace gr {
         0x0F,0x8F,0x4F,0xCF,0x2F,0xAF,0x6F,0xEF,0x1F,0x9F,0x5F,0xDF,0x3F,0xBF,0x7F,0xFF
     };
 
-    class transport_framing_bb_impl : public transport_framing_bb
+    class transport_framing_enc_bb_impl : public transport_framing_enc_bb
     {
      private:
       unsigned char compute_sum(const unsigned char *bytes);
 
      public:
-      transport_framing_bb_impl();
-      ~transport_framing_bb_impl();
+      transport_framing_enc_bb_impl();
+      ~transport_framing_enc_bb_impl();
 
       // Where all the action really happens
       int work(int noutput_items,
@@ -81,5 +81,5 @@ namespace gr {
   } // namespace qam
 } // namespace gr
 
-#endif /* INCLUDED_QAM_TRANSPORT_FRAMING_BB_IMPL_H */
+#endif /* INCLUDED_QAM_TRANSPORT_FRAMING_ENC_BB_IMPL_H */
 

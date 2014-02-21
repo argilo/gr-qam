@@ -19,8 +19,8 @@
  */
 
 
-#ifndef INCLUDED_QAM_TRANSPORT_FRAMING_BB_H
-#define INCLUDED_QAM_TRANSPORT_FRAMING_BB_H
+#ifndef INCLUDED_QAM_TRANSPORT_FRAMING_ENC_BB_H
+#define INCLUDED_QAM_TRANSPORT_FRAMING_ENC_BB_H
 
 #include <qam/api.h>
 #include <gnuradio/sync_block.h>
@@ -33,17 +33,17 @@ namespace gr {
      * \ingroup qam
      *
      */
-    class QAM_API transport_framing_bb : virtual public gr::sync_block
+    class QAM_API transport_framing_enc_bb : virtual public gr::sync_block
     {
      public:
-      typedef boost::shared_ptr<transport_framing_bb> sptr;
+      typedef boost::shared_ptr<transport_framing_enc_bb> sptr;
 
       /*!
-       * \brief Return a shared_ptr to a new instance of qam::transport_framing_bb.
+       * \brief Return a shared_ptr to a new instance of qam::transport_framing_enc_bb.
        *
-       * To avoid accidental use of raw pointers, qam::transport_framing_bb's
+       * To avoid accidental use of raw pointers, qam::transport_framing_enc_bb's
        * constructor is in a private implementation
-       * class. qam::transport_framing_bb::make is the public interface for
+       * class. qam::transport_framing_enc_bb::make is the public interface for
        * creating new instances.
        */
       static sptr make();
@@ -52,5 +52,5 @@ namespace gr {
   } // namespace qam
 } // namespace gr
 
-#endif /* INCLUDED_QAM_TRANSPORT_FRAMING_BB_H */
+#endif /* INCLUDED_QAM_TRANSPORT_FRAMING_ENC_BB_H */
 

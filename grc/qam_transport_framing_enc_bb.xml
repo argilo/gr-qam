@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <block>
-  <name>MPEG-2 Transport Framing</name>
-  <key>qam_transport_framing_bb</key>
+  <name>Transport Framing Encoder</name>
+  <key>qam_transport_framing_enc_bb</key>
   <category>QAM</category>
   <import>import qam</import>
-  <make>qam.transport_framing_bb()</make>
+  <make>qam.transport_framing_enc_bb()</make>
 
   <!-- Make one 'sink' node per input. Sub-nodes:
        * name (an identifier for the GUI)

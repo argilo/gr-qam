@@ -23,23 +23,23 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include "transport_framing_bb_impl.h"
+#include "transport_framing_enc_bb_impl.h"
 
 namespace gr {
   namespace qam {
 
-    transport_framing_bb::sptr
-    transport_framing_bb::make()
+    transport_framing_enc_bb::sptr
+    transport_framing_enc_bb::make()
     {
       return gnuradio::get_initial_sptr
-        (new transport_framing_bb_impl());
+        (new transport_framing_enc_bb_impl());
     }
 
     /*
      * The private constructor
      */
-    transport_framing_bb_impl::transport_framing_bb_impl()
-      : gr::sync_block("transport_framing_bb",
+    transport_framing_enc_bb_impl::transport_framing_enc_bb_impl()
+      : gr::sync_block("transport_framing_enc_bb",
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
@@ -49,11 +49,11 @@ namespace gr {
     /*
      * Our virtual destructor.
      */
-    transport_framing_bb_impl::~transport_framing_bb_impl()
+    transport_framing_enc_bb_impl::~transport_framing_enc_bb_impl()
     {
     }
 
-    unsigned char transport_framing_bb_impl::compute_sum(const unsigned char *bytes) {
+    unsigned char transport_framing_enc_bb_impl::compute_sum(const unsigned char *bytes) {
         unsigned char i, bit, out, out1, out2, out3;
 
         unsigned char tapsG = 0xB1; // 10110001
@@ -109,7 +109,7 @@ namespace gr {
     }
 
     int
-    transport_framing_bb_impl::work(int noutput_items,
+    transport_framing_enc_bb_impl::work(int noutput_items,
 			  gr_vector_const_void_star &input_items,
 			  gr_vector_void_star &output_items)
     {
