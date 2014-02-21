@@ -23,23 +23,23 @@
 #endif
 
 #include <gnuradio/io_signature.h>
-#include "reed_solomon_bb_impl.h"
+#include "reed_solomon_enc_bb_impl.h"
 
 namespace gr {
   namespace qam {
 
-    reed_solomon_bb::sptr
-    reed_solomon_bb::make()
+    reed_solomon_enc_bb::sptr
+    reed_solomon_enc_bb::make()
     {
       return gnuradio::get_initial_sptr
-        (new reed_solomon_bb_impl());
+        (new reed_solomon_enc_bb_impl());
     }
 
     /*
      * The private constructor
      */
-    reed_solomon_bb_impl::reed_solomon_bb_impl()
-      : gr::block("reed_solomon_bb",
+    reed_solomon_enc_bb_impl::reed_solomon_enc_bb_impl()
+      : gr::block("reed_solomon_enc_bb",
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
@@ -50,11 +50,11 @@ namespace gr {
     /*
      * Our virtual destructor.
      */
-    reed_solomon_bb_impl::~reed_solomon_bb_impl()
+    reed_solomon_enc_bb_impl::~reed_solomon_enc_bb_impl()
     {
     }
 
-    void reed_solomon_bb_impl::init_rs() {
+    void reed_solomon_enc_bb_impl::init_rs() {
         unsigned char x;
         int i, j;
 
@@ -85,7 +85,7 @@ namespace gr {
         }
     }
 
-    unsigned char reed_solomon_bb_impl::gf_poly_eval(unsigned char *p, int len, unsigned char x) {
+    unsigned char reed_solomon_enc_bb_impl::gf_poly_eval(unsigned char *p, int len, unsigned char x) {
         unsigned char y = p[0];
         int i;
 
@@ -95,7 +95,7 @@ namespace gr {
         return y;
     }
 
-    void reed_solomon_bb_impl::reed_solomon(const unsigned char *message, unsigned char *output) {
+    void reed_solomon_enc_bb_impl::reed_solomon_enc(const unsigned char *message, unsigned char *output) {
         // Generator polynomial from p.7 of ANSI/SCTE 07 2013
         unsigned char g[] = {1, gf_exp[52], gf_exp[116], gf_exp[119], gf_exp[61], gf_exp[15]};
         int i, j;
@@ -114,13 +114,13 @@ namespace gr {
     }
 
     void
-    reed_solomon_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
+    reed_solomon_enc_bb_impl::forecast (int noutput_items, gr_vector_int &ninput_items_required)
     {
         ninput_items_required[0] = (noutput_items / 128) * 122;
     }
 
     int
-    reed_solomon_bb_impl::general_work (int noutput_items,
+    reed_solomon_enc_bb_impl::general_work (int noutput_items,
                        gr_vector_int &ninput_items,
                        gr_vector_const_void_star &input_items,
                        gr_vector_void_star &output_items)
@@ -130,7 +130,7 @@ namespace gr {
         int j = 0;
 
         for (int i = 0; i < noutput_items; i += 128) {
-            reed_solomon(in + j, out + i);
+            reed_solomon_enc(in + j, out + i);
             j += 122;
         }
 

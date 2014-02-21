@@ -18,15 +18,15 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef INCLUDED_QAM_REED_SOLOMON_BB_IMPL_H
-#define INCLUDED_QAM_REED_SOLOMON_BB_IMPL_H
+#ifndef INCLUDED_QAM_REED_SOLOMON_ENC_BB_IMPL_H
+#define INCLUDED_QAM_REED_SOLOMON_ENC_BB_IMPL_H
 
-#include <qam/reed_solomon_bb.h>
+#include <qam/reed_solomon_enc_bb.h>
 
 namespace gr {
   namespace qam {
 
-    class reed_solomon_bb_impl : public reed_solomon_bb
+    class reed_solomon_enc_bb_impl : public reed_solomon_enc_bb
     {
      private:
       unsigned char gf_mul_table[128][128];
@@ -35,11 +35,11 @@ namespace gr {
 
       void init_rs();
       unsigned char gf_poly_eval(unsigned char *p, int len, unsigned char x);
-      void reed_solomon(const unsigned char *message, unsigned char *output);
+      void reed_solomon_enc(const unsigned char *message, unsigned char *output);
 
      public:
-      reed_solomon_bb_impl();
-      ~reed_solomon_bb_impl();
+      reed_solomon_enc_bb_impl();
+      ~reed_solomon_enc_bb_impl();
 
       // Where all the action really happens
       void forecast (int noutput_items, gr_vector_int &ninput_items_required);
@@ -53,5 +53,5 @@ namespace gr {
   } // namespace qam
 } // namespace gr
 
-#endif /* INCLUDED_QAM_REED_SOLOMON_BB_IMPL_H */
+#endif /* INCLUDED_QAM_REED_SOLOMON_ENC_BB_IMPL_H */
 

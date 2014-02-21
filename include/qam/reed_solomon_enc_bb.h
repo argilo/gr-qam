@@ -19,8 +19,8 @@
  */
 
 
-#ifndef INCLUDED_QAM_REED_SOLOMON_BB_H
-#define INCLUDED_QAM_REED_SOLOMON_BB_H
+#ifndef INCLUDED_QAM_REED_SOLOMON_ENC_BB_H
+#define INCLUDED_QAM_REED_SOLOMON_ENC_BB_H
 
 #include <qam/api.h>
 #include <gnuradio/block.h>
@@ -33,17 +33,17 @@ namespace gr {
      * \ingroup qam
      *
      */
-    class QAM_API reed_solomon_bb : virtual public gr::block
+    class QAM_API reed_solomon_enc_bb : virtual public gr::block
     {
      public:
-      typedef boost::shared_ptr<reed_solomon_bb> sptr;
+      typedef boost::shared_ptr<reed_solomon_enc_bb> sptr;
 
       /*!
-       * \brief Return a shared_ptr to a new instance of qam::reed_solomon_bb.
+       * \brief Return a shared_ptr to a new instance of qam::reed_solomon_enc_bb.
        *
-       * To avoid accidental use of raw pointers, qam::reed_solomon_bb's
+       * To avoid accidental use of raw pointers, qam::reed_solomon_enc_bb's
        * constructor is in a private implementation
-       * class. qam::reed_solomon_bb::make is the public interface for
+       * class. qam::reed_solomon_enc_bb::make is the public interface for
        * creating new instances.
        */
       static sptr make();
@@ -52,5 +52,5 @@ namespace gr {
   } // namespace qam
 } // namespace gr
 
-#endif /* INCLUDED_QAM_REED_SOLOMON_BB_H */
+#endif /* INCLUDED_QAM_REED_SOLOMON_ENC_BB_H */
 

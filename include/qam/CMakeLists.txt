@@ -23,7 +23,7 @@
 install(FILES
     api.h
     transport_framing_bb.h
-    reed_solomon_bb.h
+    reed_solomon_enc_bb.h
     interleaver_bb.h
     randomizer_bb.h
     frame_sync_enc_bb.h

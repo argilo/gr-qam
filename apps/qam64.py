@@ -2,7 +2,7 @@
 ##################################################
 # Gnuradio Python Flow Graph
 # Title: Qam64
-# Generated: Thu Feb 20 20:38:27 2014
+# Generated: Thu Feb 20 20:59:28 2014
 ##################################################
 
 from gnuradio import blocks
@@ -62,7 +62,7 @@ class qam64(grc_wxgui.top_block_gui):
         self.Add(_gain_sizer)
         self.qam_trellis_enc_bb_0 = qam.trellis_enc_bb()
         self.qam_transport_framing_bb_0 = qam.transport_framing_bb()
-        self.qam_reed_solomon_bb_0 = qam.reed_solomon_bb()
+        self.qam_reed_solomon_enc_bb_0 = qam.reed_solomon_enc_bb()
         self.qam_randomizer_bb_0 = qam.randomizer_bb()
         self.qam_interleaver_bb_0 = qam.interleaver_bb(128,4)
         self.qam_frame_sync_enc_bb_0 = qam.frame_sync_enc_bb(6)
@@ -87,10 +87,10 @@ class qam64(grc_wxgui.top_block_gui):
         ##################################################
         self.connect((self.digital_chunks_to_symbols_xx_0, 0), (self.interp_fir_filter_xxx_0, 0))
         self.connect((self.interp_fir_filter_xxx_0, 0), (self.osmosdr_sink_0, 0))
-        self.connect((self.qam_reed_solomon_bb_0, 0), (self.qam_interleaver_bb_0, 0))
+        self.connect((self.qam_reed_solomon_enc_bb_0, 0), (self.qam_interleaver_bb_0, 0))
         self.connect((self.qam_trellis_enc_bb_0, 0), (self.digital_chunks_to_symbols_xx_0, 0))
         self.connect((self.blocks_file_source_0, 0), (self.qam_transport_framing_bb_0, 0))
-        self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qam_reed_solomon_bb_0, 0))
+        self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qam_reed_solomon_enc_bb_0, 0))
         self.connect((self.qam_transport_framing_bb_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
         self.connect((self.qam_interleaver_bb_0, 0), (self.qam_randomizer_bb_0, 0))
         self.connect((self.qam_randomizer_bb_0, 0), (self.qam_frame_sync_enc_bb_0, 0))

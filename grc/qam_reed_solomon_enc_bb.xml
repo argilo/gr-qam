@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <block>
-  <name>Reed-Solomon</name>
-  <key>qam_reed_solomon_bb</key>
+  <name>Reed-Solomon Encoder</name>
+  <key>qam_reed_solomon_enc_bb</key>
   <category>QAM</category>
   <import>import qam</import>
-  <make>qam.reed_solomon_bb()</make>
+  <make>qam.reed_solomon_enc_bb()</make>
 
   <!-- Make one 'sink' node per input. Sub-nodes:
        * name (an identifier for the GUI)
