@@ -29,23 +29,8 @@ Transmission Standard for Cable Television:
 
     http://www.scte.org/FileDownload.aspx?A=3445
 
-At present, a complete 64-QAM transmitter is implemented, but it does
-not yet run fast enough for real-time transmission.  It consists of two
-parts: a Python script (qam-steps.py) that takes an MPEG transport
-stream as input and produces a file containing 64-QAM symbols.  This is
-the part that runs well slower than real-time.  The second piece is a
-GNU Radio flow graph (qam64.grc) that reads in the 64-QAM symbols
-produced by qam-steps.py and transmits them through a BladeRF.  By
-default, it does so on 438-444 MHz, which corresponds with cable
-channel 60 and happens to be in the 70cm amateur band.  To adjust the
-transmit frequency, change the center_freq variable.
-
-The qam-constellation.py script is not needed for transmitting; it was
-used to convert the QAM constellation table from ANSI/SCTE 70 2013 into
-I/Q values for the "Chunks to Symbols" block in the flow graph.
-
-The next step for the project is to replace qam-steps.py with optimized
-GNU Radio blocks so that the transmitter can run in real time.
+At present only 64-QAM is supported.  An example transmitter can be
+found in /apps.
 
 Build instructions:
 
