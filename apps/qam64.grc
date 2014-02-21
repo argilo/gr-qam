@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='ASCII'?>
 <flow_graph>
-  <timestamp>Thu Feb 20 20:59:22 2014</timestamp>
+  <timestamp>Thu Feb 20 21:02:41 2014</timestamp>
   <block>
     <key>options</key>
     <param>
@@ -64,7 +64,7 @@
     <key>variable</key>
     <param>
       <key>id</key>
-      <value>samp_rate</value>
+      <value>rrc_taps</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -72,11 +72,11 @@
     </param>
     <param>
       <key>value</key>
-      <value>5056941 * 2</value>
+      <value>50</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(14, 180)</value>
+      <value>(15, 463)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -110,7 +110,7 @@
     <key>variable</key>
     <param>
       <key>id</key>
-      <value>rrc_taps</value>
+      <value>samp_rate</value>
     </param>
     <param>
       <key>_enabled</key>
@@ -118,11 +118,11 @@
     </param>
     <param>
       <key>value</key>
-      <value>20</value>
+      <value>5056941 * 2</value>
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(15, 463)</value>
+      <value>(14, 180)</value>
     </param>
     <param>
       <key>_rotation</key>

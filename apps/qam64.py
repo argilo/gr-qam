@@ -2,7 +2,7 @@
 ##################################################
 # Gnuradio Python Flow Graph
 # Title: Qam64
-# Generated: Thu Feb 20 20:59:28 2014
+# Generated: Thu Feb 20 21:02:42 2014
 ##################################################
 
 from gnuradio import blocks
@@ -30,7 +30,7 @@ class qam64(grc_wxgui.top_block_gui):
         # Variables
         ##################################################
         self.samp_rate = samp_rate = 5056941 * 2
-        self.rrc_taps = rrc_taps = 20
+        self.rrc_taps = rrc_taps = 50
         self.gain = gain = 0
         self.center_freq = center_freq = 441000000
 
