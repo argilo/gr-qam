@@ -118,7 +118,7 @@ namespace gr {
 
         for (int i = 0; i < noutput_items; i += 188) {
             memcpy(out + i, in + i + 1, 187);
-            out[i + 187] = compute_sum(in + 1);
+            out[i + 187] = compute_sum(in + i + 1);
         }
 
         // Tell runtime system how many output items we produced.

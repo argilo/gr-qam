@@ -45,7 +45,7 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(unsigned char)),
               gr::io_signature::make(1, 1, sizeof(unsigned char)))
     {
-        registers = (unsigned char *) malloc(sizeof(int) * I * ((I-1) * J));
+        registers = (unsigned char *) malloc(sizeof(unsigned char) * I * ((I-1) * J));
         if (registers == NULL) {
             fprintf(stderr, "Out of memory.\n");
             exit(1);
@@ -57,8 +57,8 @@ namespace gr {
             exit(1);
         }
 
-        memset(registers, 0, I * ((I-1) * J));
-        memset(pointers, 0, I);
+        memset(registers, 0, sizeof(unsigned char) * I * ((I-1) * J));
+        memset(pointers, 0, sizeof(int) * I);
 
         this->I = I;
         this->J = J;
