@@ -2,7 +2,7 @@
 ##################################################
 # Gnuradio Python Flow Graph
 # Title: Qam64 B200
-# Generated: Mon Apr  7 21:38:57 2014
+# Generated: Fri Apr 18 20:21:55 2014
 ##################################################
 
 from gnuradio import blocks
@@ -39,6 +39,7 @@ class qam64_b200(gr.top_block):
         	device_addr="recv_frame_size=65536,num_recv_frames=128,send_frame_size=65536,num_send_frames=128,master_clock_rate=" + str(samp_rate*4),
         	stream_args=uhd.stream_args(
         		cpu_format="fc32",
+        		otw_format="sc16",
         		channels=range(1),
         	),
         )
@@ -65,16 +66,16 @@ class qam64_b200(gr.top_block):
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.interp_fir_filter_xxx_0, 0), (self.uhd_usrp_sink_0, 0))
         self.connect((self.digital_chunks_to_symbols_xx_0, 0), (self.interp_fir_filter_xxx_0, 0))
-        self.connect((self.qam_reed_solomon_enc_bb_0, 0), (self.qam_interleaver_bb_0, 0))
-        self.connect((self.qam_trellis_enc_bb_0, 0), (self.digital_chunks_to_symbols_xx_0, 0))
         self.connect((self.qam_interleaver_bb_0, 0), (self.qam_randomizer_bb_0, 0))
         self.connect((self.qam_randomizer_bb_0, 0), (self.qam_frame_sync_enc_bb_0, 0))
         self.connect((self.qam_frame_sync_enc_bb_0, 0), (self.qam_trellis_enc_bb_0, 0))
-        self.connect((self.qam_transport_framing_enc_bb_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
-        self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qam_reed_solomon_enc_bb_0, 0))
-        self.connect((self.interp_fir_filter_xxx_0, 0), (self.uhd_usrp_sink_0, 0))
         self.connect((self.blks2_tcp_source_0, 0), (self.qam_transport_framing_enc_bb_0, 0))
+        self.connect((self.blocks_packed_to_unpacked_xx_0, 0), (self.qam_reed_solomon_enc_bb_0, 0))
+        self.connect((self.qam_transport_framing_enc_bb_0, 0), (self.blocks_packed_to_unpacked_xx_0, 0))
+        self.connect((self.qam_trellis_enc_bb_0, 0), (self.digital_chunks_to_symbols_xx_0, 0))
+        self.connect((self.qam_reed_solomon_enc_bb_0, 0), (self.qam_interleaver_bb_0, 0))
 
 
 # QT sink close method reimplementation
